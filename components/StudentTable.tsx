@@ -1,26 +1,26 @@
 "use client";
 
-import { useEffect } from "react";
-import type { Schema } from "@/amplify/data/resource";
+//import { useEffect } from "react";
+//import type { Schema } from "@/amplify/data/resource";
 import "./../app/app.css";
 import "@aws-amplify/ui-react/styles.css";
-import { useAuthenticator } from "@aws-amplify/ui-react";
-import { generateClient } from "aws-amplify/data";
+//import { useAuthenticator } from "@aws-amplify/ui-react";
+//import { generateClient } from "aws-amplify/data";
 
-const client = generateClient<Schema>();
+//const client = generateClient<Schema>();
 
 export const StudentTable = () => {
 
-  const { user, signOut } = useAuthenticator();
+  //const { user, signOut } = useAuthenticator();
   //const [studentArray, setStudentArray] = useState<Array<Schema["Students"]["type"]>>([]);
 
-  const loadStudentData = () => {
-    if (!user) return;
-  }
+  //const loadStudentData = () => {
+  //  if (!user) return;
+  //}
 
-  useEffect(() => {
-    loadStudentData();
-  }, [user?.username]);
+  //useEffect(() => {
+  //  loadStudentData();
+  //}, [user?.username]);
 
   return (
     <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
