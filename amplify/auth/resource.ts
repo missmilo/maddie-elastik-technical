@@ -1,12 +1,9 @@
-import { type ClientSchema, a, defineData, type AuthorizationBuilder } from '@aws-amplify/backend';
+import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  UserProfile: a.model({
-    firstName: a.string(),
-    lastName: a.string(),
-    userID: a.string(),
-    email: a.string(),
-  }).authorization((allow: AuthorizationBuilder) => [
+  Todo: a.model({
+    content: a.string(),
+  }).authorization((allow) => [
     allow.owner(),
   ]),
 });

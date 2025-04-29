@@ -18,14 +18,14 @@ export function UserProfile() {
 
     client.models.UserProfile.observeQuery({
       filter: {
-        userID: { eq: user.username }, // 🔥 filter by logged-in userID
+        userID: { eq: user.username }, 
       },
     }).subscribe({
       next: (data) => {
         if (data.items.length > 0) {
           setUserProfile(data.items[0]);
         } else {
-          setUserProfile(undefined); // No profile yet
+          setUserProfile(undefined); 
         }
       },
     });
@@ -33,7 +33,7 @@ export function UserProfile() {
 
   useEffect(() => {
     loadUserProfile();
-  }, [user?.username]); // 🔥 re-run when user is ready
+  }, [user?.username]); 
 
   function createUserProfile() {
     if (!user) return;
