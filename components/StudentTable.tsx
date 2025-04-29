@@ -1,27 +1,43 @@
 "use client";
 
-//import { useEffect } from "react";
-//import type { Schema } from "@/amplify/data/resource";
+import { Button } from "@aws-amplify/ui-react";
 import "./../app/app.css";
 import "@aws-amplify/ui-react/styles.css";
-//import { useAuthenticator } from "@aws-amplify/ui-react";
-//import { generateClient } from "aws-amplify/data";
+import { get } from 'aws-amplify/api';
 
-//const client = generateClient<Schema>();
+export async function getItem() {
+  try {
+    const restOperation = get({
+      apiName: 'myRestApi', 
+      path: 'items', 
+    });
+
+    const { body } = await restOperation.response;
+    const response = await body.json();
+
+    console.log('GET call succeeded');
+    console.log(response);
+    return response;
+  } catch (error: any) {
+    console.error('GET call failed:', error);
+    if (error.response) {
+      const errorBody = await error.response.body.text();
+      console.error('Error response body:', errorBody);
+    }
+  }
+}
+
+
 
 export const StudentTable = () => {
 
-  //const { user, signOut } = useAuthenticator();
-  //const [studentArray, setStudentArray] = useState<Array<Schema["Students"]["type"]>>([]);
-
-  //const loadStudentData = () => {
-  //  if (!user) return;
-  //}
-
-  //useEffect(() => {
-  //  loadStudentData();
-  //}, [user?.username]);
-
+  const handleClick = async () => {
+    try {
+      await getItem();
+    } catch (error) {
+      console.error('Failed to get item', error);
+    }
+  };
   return (
     <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
       <table className="table">
@@ -50,6 +66,9 @@ export const StudentTable = () => {
           </tr>
         </tbody>
       </table>
+
+      <Button onClick={handleClick}>Get Item</Button>
+
     </div>
   );
 }
