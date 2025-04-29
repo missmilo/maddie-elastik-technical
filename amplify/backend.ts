@@ -35,7 +35,7 @@ const myRestApi = new RestApi(apiStack, "RestApi", {
 });
 
 const lambdaIntegration = new LambdaIntegration(
-  backend.getStudents.resources.lambdaFunction,
+  backend.getStudents,
 );
 
 const itemsPath = myRestApi.root.addResource("items", {
