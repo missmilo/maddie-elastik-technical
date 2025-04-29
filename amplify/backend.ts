@@ -13,7 +13,7 @@ import { data } from "./data/resource";
 import { getStudents } from './functions/get-students/resource.js';
 
 
-const backend = defineBackend({
+export const backend = defineBackend({
   auth,
   data,
   getStudents,
@@ -98,3 +98,12 @@ backend.addOutput({
     },
   },
 });
+
+// TODO: Restrict to read access
+backend.getStudents.resources.lambda.addToRolePolicy(
+  new PolicyStatement({
+    actions: ["dynamodb:*"],
+    resources: ["*"],
+  })
+);
+
