@@ -4,7 +4,7 @@ const schema = a.schema({
   Students: a.model({
     firstName: a.string(),
     lastName: a.string(),
-    dob: a.string(), //milliseconds from epoch
+    dob: a.string(), 
     schoolName: a.string(),
     schoolCoordinatorName: a.string(),
     schoolTeacherName: a.string(),
