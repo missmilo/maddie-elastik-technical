@@ -1,6 +1,6 @@
 'use client';
 
-import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react';
+import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 
 export default function AuthWrapper({ children }: { children: React.ReactNode }) {
