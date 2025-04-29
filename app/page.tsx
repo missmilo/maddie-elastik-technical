@@ -5,7 +5,8 @@ import outputs from "@/amplify_outputs.json";
 import "@aws-amplify/ui-react/styles.css";
 import AuthWrapper from "@/components/AuthWrapper";
 import { Amplify } from 'aws-amplify';
-import { UserProfile } from "@/components/UserProfile";
+import { StudentTable } from "@/components/StudentTable";
+import { NavBar } from "@/components/NavBar";
 
 
 
@@ -14,11 +15,11 @@ Amplify.configure(outputs);
 
 
 export default function App() {
- 
   return (
     <AuthWrapper>
-      <main>      
-        <UserProfile />
+      <main>
+        <NavBar />
+        <StudentTable />
       </main>
     </AuthWrapper>
   );

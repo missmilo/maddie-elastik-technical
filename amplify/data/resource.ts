@@ -1,10 +1,13 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 
 const schema = a.schema({
-  UserProfile: a.model({
+  Students: a.model({
     firstName: a.string(),
     lastName: a.string(),
-    userID: a.string(),
+    dob: a.number(), //milliseconds from epoch
+    schoolName: a.string(),
+    schoolCoordinatorName: a.string(),
+    schoolTeacherName: a.string(),
     email: a.string(),
   }).authorization((allow) => [
     allow.owner(),
