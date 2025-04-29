@@ -18,12 +18,9 @@ export async function getItem() {
     console.log('GET call succeeded');
     console.log(response);
     return response;
-  } catch (error: any) {
+  } catch (error) {
+    //TODO: handle error more gracefully than just logging to the console
     console.error('GET call failed:', error);
-    if (error.response) {
-      const errorBody = await error.response.body.text();
-      console.error('Error response body:', errorBody);
-    }
   }
 }
 
