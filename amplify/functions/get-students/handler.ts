@@ -2,9 +2,6 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand, ScanCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 
-const ddbClient = new DynamoDBClient({});
-export const docClient = DynamoDBDocumentClient.from(ddbClient);
-
 const parseLimit = (event: APIGatewayProxyEvent) => {
   return event.queryStringParameters?.limit
    ? parseInt(event.queryStringParameters.limit, 10)
@@ -23,13 +20,30 @@ const getNextTokenURI = (result: ScanCommandOutput) => {
   : null;
 }
 
+export const getClient = (
+  injectedClient?: Partial<DynamoDBDocumentClient>
+): DynamoDBDocumentClient => {
+  if (
+    !injectedClient ||
+    typeof injectedClient.send !== 'function'
+  ) {
+    return DynamoDBDocumentClient.from(new DynamoDBClient({}));
+  }
+  return injectedClient as DynamoDBDocumentClient;
+};
+
 export const handler = async (
   event: APIGatewayProxyEvent,
-  injectedClient = docClient
+  injectedClient?: DynamoDBDocumentClient
 ): Promise<APIGatewayProxyResult> => {
 
+  const client = getClient(injectedClient);
+
   const limit = parseLimit(event);
+  console.log('Limit: ', limit);
+
   const nextToken = parseNextToken(event);
+  console.log('Next Token: ', nextToken);
 
   //TODO: Remove hard coded table name
   const scanParams = {
@@ -41,7 +55,8 @@ export const handler = async (
   };
 
   // DynamoDB returns Items (results) and LastEvaluatedKey (next page - only if there are more items to fetch)
-  const result = await injectedClient.send(new ScanCommand(scanParams));
+  const result = await client.send(new ScanCommand(scanParams));
+  console.log('Result: ', result);
 
   return {
     statusCode: 200,
