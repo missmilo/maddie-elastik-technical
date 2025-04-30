@@ -42,7 +42,7 @@ async function fetchStudents(nextToken?: string): Promise<StudentResponse> {
   });
 
   const { body } = await restOperation.response;
-  return (await body.json()) as StudentResponse;
+  return (await body.json()) as unknown as StudentResponse;
 }
 
 export const StudentTable = () => {
