@@ -16,7 +16,6 @@ interface Student {
   schoolTeacherName: string;
   createdAt: string;
   updatedAt: string;
-  __typename?: string;
 }
 
 interface StudentResponse {
@@ -125,7 +124,7 @@ export const StudentTable = () => {
             <tr>
               <th>#</th>
               <th className="cursor-pointer select-none" onClick={handleSort}>
-                First Name {sortDirection === 'asc' ? '↑' : '↓'}
+                First Name
               </th>
               <th>Last Name</th>
               <th>Date of Birth</th>

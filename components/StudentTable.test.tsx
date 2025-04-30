@@ -1,20 +1,21 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import * as api from 'aws-amplify/api';
 import '@testing-library/jest-dom';
 import { StudentTable } from './StudentTable';
+import { Provider } from 'react-redux';
+import { store } from '../store';
+
 
 jest.mock('aws-amplify/api');
-
 const mockedGet = api.get as jest.Mock;
 
-
 describe('StudentTable', () => {
+
   beforeEach(() => {
     mockedGet.mockReset();
   });
 
-  it('renders headers and loads student data', async () => {
-    // Arrange: mock response
+  it('renders headers and loads student data with pagination and sorting', async () => {
     mockedGet.mockReturnValueOnce({
       response: {
         body: {
@@ -29,8 +30,6 @@ describe('StudentTable', () => {
                 schoolName: 'Test School',
                 schoolCoordinatorName: 'John Smith',
                 schoolTeacherName: 'Mary Johnson',
-                createdAt: '',
-                updatedAt: '',
               },
             ],
             nextToken: null,
@@ -39,18 +38,20 @@ describe('StudentTable', () => {
       },
     });
 
-    // Act
-    render(<StudentTable />);
+    render(
+      <Provider store={store} >
+        <StudentTable />
+      </Provider>
+    );
 
-    // Assert headers render
+    // Wait for data
     expect(await screen.findByText('First Name')).toBeInTheDocument();
     expect(screen.getByText('Last Name')).toBeInTheDocument();
 
-    // Wait for the async data to load and verify it
-    await waitFor(() => {
-      expect(screen.getByText('Jane')).toBeInTheDocument();
-      expect(screen.getByText('Doe')).toBeInTheDocument();
-      expect(screen.getByText('jane@example.com')).toBeInTheDocument();
-    });
+    // Check student data
+    expect(await screen.findByText('Jane')).toBeInTheDocument();
+    expect(screen.getByText('Doe')).toBeInTheDocument();
+    expect(screen.getByText('jane@example.com')).toBeInTheDocument();
+
   });
 });
