@@ -14,7 +14,6 @@ import {
 } from '@aws-amplify/ui-react';
 import { get } from 'aws-amplify/api';
 import '@aws-amplify/ui-react/styles.css';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
 import { setFilter } from '@/store/slices/studentSlice';
@@ -58,44 +57,39 @@ export const StudentTable = () => {
 
   const filter = useSelector((state: RootState) => state.student.filter);
   const dispatch = useDispatch<AppDispatch>();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  React.useEffect(() => {
-    const initialFilter = searchParams.get('filter') || '';
-    dispatch(setFilter(initialFilter));
-  }, [searchParams, dispatch]);
 
   const handleFilterChange = (value: string) => {
     dispatch(setFilter(value));
-    const encoded = encodeURIComponent(value);
-    router.push(`?filter=${encoded}`);
+    // no URL sync — local state only
   };
 
-  const loadPage = React.useCallback(
-    async (pageIndex: number) => {
-      setLoading(true);
-      const token = pageTokens[pageIndex - 1];
-      const result = await fetchStudents(token ?? undefined);
+  const loadPage = async (pageIndex: number) => {
+    setLoading(true);
 
+    const token = pageTokens[pageIndex - 1] ?? undefined;
+
+    try {
+      const result = await fetchStudents(token);
       setStudents(result.students ?? []);
+      setCurrentPageIndex(pageIndex);
 
-      if (pageIndex === pageTokens.length && result.nextToken) {
+      if (result.nextToken && pageTokens.length === pageIndex) {
         setPageTokens([...pageTokens, result.nextToken]);
         setHasMorePages(true);
       } else if (!result.nextToken) {
         setHasMorePages(false);
       }
+    } catch (error) {
+      console.error('Failed to load students:', error);
+    }
 
-      setCurrentPageIndex(pageIndex);
-      setLoading(false);
-    },
-    [pageTokens]
-  );
+    setLoading(false);
+  };
 
+  // Load first page on mount
   React.useEffect(() => {
     void loadPage(1);
-  }, [loadPage]);
+  }, []);
 
   const filteredStudents = students.filter((student) =>
     student.firstName.toLowerCase().startsWith(filter.toLowerCase())
@@ -155,8 +149,16 @@ export const StudentTable = () => {
           currentPage={currentPageIndex}
           totalPages={pageTokens.length}
           hasMorePages={hasMorePages}
-          onNext={() => void loadPage(currentPageIndex + 1)}
-          onPrevious={() => void loadPage(currentPageIndex - 1)}
+          onNext={() => {
+            if (currentPageIndex < pageTokens.length) {
+              void loadPage(currentPageIndex + 1);
+            }
+          }}
+          onPrevious={() => {
+            if (currentPageIndex > 1) {
+              void loadPage(currentPageIndex - 1);
+            }
+          }}
           onChange={(newPageIndex) => {
             if (typeof newPageIndex === 'number') {
               void loadPage(newPageIndex);
