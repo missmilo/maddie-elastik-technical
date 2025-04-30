@@ -1,22 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Pagination,
-  View,
-  Text,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Flex,
-} from '@aws-amplify/ui-react';
 import { get } from 'aws-amplify/api';
-import '@aws-amplify/ui-react/styles.css';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '@/store';
-import { setFilter } from '@/store/slices/studentSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface Student {
   id: string;
@@ -57,11 +44,6 @@ export const StudentTable = () => {
   const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
   const filter = useSelector((state: RootState) => state.student.filter);
-  const dispatch = useDispatch<AppDispatch>();
-
-  const handleFilterChange = (value: string) => {
-    dispatch(setFilter(value));
-  };
 
   const loadPage = async (pageIndex: number) => {
     setLoading(true);
@@ -86,7 +68,8 @@ export const StudentTable = () => {
   };
 
   React.useEffect(() => {
-    void loadPage(1);
+    void loadPage(currentPageIndex);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSort = () => {
@@ -94,102 +77,116 @@ export const StudentTable = () => {
   };
 
   const filteredStudents = students
-    .filter((student) =>
-      student.firstName.toLowerCase().startsWith(filter.toLowerCase())
-    )
-    .sort((a, b) => {
-      const nameA = a.firstName.toLowerCase();
-      const nameB = b.firstName.toLowerCase();
-      if (nameA === nameB) return 0;
-      return sortDirection === 'asc'
-        ? nameA.localeCompare(nameB)
-        : nameB.localeCompare(nameA);
-    });
+    .filter((student) => {
+      const matchFirstName = filter.firstName
+        ? student.firstName.toLowerCase().includes(filter.firstName.toLowerCase())
+        : true;
+
+      const matchLastName = filter.lastName
+        ? student.lastName.toLowerCase().includes(filter.lastName.toLowerCase())
+        : true;
+
+      const matchEmail = filter.email
+        ? student.email.toLowerCase().includes(filter.email.toLowerCase())
+        : true;
+
+      const matchDob = filter.dob
+        ? student.dob === filter.dob
+        : true;
+
+      const matchSchool = filter.schoolName
+        ? student.schoolName.toLowerCase().includes(filter.schoolName.toLowerCase())
+        : true;
+
+      const matchCoordinator = filter.schoolCoordinatorName
+        ? student.schoolCoordinatorName.toLowerCase().includes(filter.schoolCoordinatorName.toLowerCase())
+        : true;
+
+      const matchTeacher = filter.schoolTeacherName
+        ? student.schoolTeacherName.toLowerCase().includes(filter.schoolTeacherName.toLowerCase())
+        : true;
+
+      return (
+        matchFirstName &&
+        matchLastName &&
+        matchEmail &&
+        matchDob &&
+        matchSchool &&
+        matchCoordinator &&
+        matchTeacher
+      );
+    })
 
   return (
-    <View className="p-4 bg-white text-black rounded shadow-md">
-      <Flex direction="row" alignItems="center" className="mb-4">
-        <Text as="label" htmlFor="filterInput" className="mr-2">
-          Filter by First Name:
-        </Text>
-        <input
-          id="filterInput"
-          type="text"
-          value={filter}
-          onChange={(e) => handleFilterChange(e.target.value)}
-          className="border p-1 rounded text-black"
-        />
-      </Flex>
+    <div className="p-6 bg-base-100 rounded shadow space-y-4">
+      <div className="overflow-x-auto">
+        <table className="table table-zebra bg-base-100 rounded">
+          <thead className="bg-base-200">
+            <tr>
+              <th>#</th>
+              <th className="cursor-pointer select-none" onClick={handleSort}>
+                First Name {sortDirection === 'asc' ? '↑' : '↓'}
+              </th>
+              <th>Last Name</th>
+              <th>Date of Birth</th>
+              <th>Email</th>
+              <th>School Name</th>
+              <th>Coordinator</th>
+              <th>Teacher</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredStudents.map((student, index) => (
+              <tr key={student.id}>
+                <td>{(currentPageIndex - 1) * students.length + index + 1}</td>
+                <td>{student.firstName}</td>
+                <td>{student.lastName}</td>
+                <td>{student.dob}</td>
+                <td>{student.email}</td>
+                <td>{student.schoolName}</td>
+                <td>{student.schoolCoordinatorName}</td>
+                <td>{student.schoolTeacherName}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <Table highlightOnHover={true}>
-        <TableHead>
-          <TableRow className="bg-gray-100 text-black">
-            <TableCell as="th">#</TableCell>
-            <TableCell
-              as="th"
-              onClick={handleSort}
-              className="cursor-pointer select-none"
+      {/* Pagination */}
+      <div className="flex justify-center">
+        <div className="join">
+          <button
+            className="join-item btn btn-sm"
+            onClick={() => loadPage(currentPageIndex - 1)}
+            disabled={currentPageIndex <= 1}
+          >
+            « Prev
+          </button>
+
+          {pageTokens.map((_, idx) => (
+            <button
+              key={idx}
+              className={`join-item btn btn-sm ${currentPageIndex === idx + 1 ? 'btn-active' : ''}`}
+              onClick={() => loadPage(idx + 1)}
             >
-              First Name {sortDirection === 'asc' ? '↑' : '↓'}
-            </TableCell>
-            <TableCell as="th">Last Name</TableCell>
-            <TableCell as="th">Date of Birth</TableCell>
-            <TableCell as="th">Email</TableCell>
-            <TableCell as="th">School Name</TableCell>
-            <TableCell as="th">Coordinator</TableCell>
-            <TableCell as="th">Teacher</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filteredStudents.map((student, index) => (
-            <TableRow
-              key={student.id}
-              className={index % 2 === 0 ? 'bg-white text-black' : 'bg-gray-50 text-black'}
-            >
-              <TableCell>
-                {(currentPageIndex - 1) * students.length + index + 1}
-              </TableCell>
-              <TableCell>{student.firstName}</TableCell>
-              <TableCell>{student.lastName}</TableCell>
-              <TableCell>{student.dob}</TableCell>
-              <TableCell>{student.email}</TableCell>
-              <TableCell>{student.schoolName}</TableCell>
-              <TableCell>{student.schoolCoordinatorName}</TableCell>
-              <TableCell>{student.schoolTeacherName}</TableCell>
-            </TableRow>
+              {idx + 1}
+            </button>
           ))}
-        </TableBody>
-      </Table>
 
-      <Flex justifyContent="center" className="mt-4">
-        <Pagination
-          currentPage={currentPageIndex}
-          totalPages={pageTokens.length}
-          hasMorePages={hasMorePages}
-          onNext={() => {
-            if (currentPageIndex < pageTokens.length) {
-              void loadPage(currentPageIndex + 1);
-            }
-          }}
-          onPrevious={() => {
-            if (currentPageIndex > 1) {
-              void loadPage(currentPageIndex - 1);
-            }
-          }}
-          onChange={(newPageIndex) => {
-            if (typeof newPageIndex === 'number') {
-              void loadPage(newPageIndex);
-            }
-          }}
-          isDisabled={loading}
-        />
-      </Flex>
+          {hasMorePages && (
+            <button
+              className="join-item btn btn-sm"
+              onClick={() => loadPage(currentPageIndex + 1)}
+            >
+              Next »
+            </button>
+          )}
+        </div>
+      </div>
 
       {loading && (
-        <Text variation="tertiary" className="text-center mt-2">
-          Loading students...
-        </Text>
+        <p className="text-center text-sm text-base-content/70">Loading students...</p>
       )}
-    </View>
+    </div>
   );
 };

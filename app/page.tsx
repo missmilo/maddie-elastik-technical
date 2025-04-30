@@ -10,6 +10,8 @@ import { NavBar } from "@/components/NavBar";
 import { parseAmplifyConfig } from "aws-amplify/utils";
 import { Provider } from 'react-redux';
 import { store } from '@/store';
+import { ProfileCard } from "@/components/ProfileCard";
+import { SearchCard } from "@/components/SearchCard";
 
 
 Amplify.configure(outputs);
@@ -41,7 +43,21 @@ export default function App() {
       <AuthWrapper>
         <main>
           <NavBar />
-          <StudentTable />
+          <div className="p-6 space-y-6">          
+            <div className="p-6 bg-base-100 rounded shadow space-y-6">
+              <div className="flex gap-6 items-stretch">
+                <div className="w-[320px] shrink-0">
+                  <ProfileCard />
+                </div>
+                <div className="flex-1">
+                  <SearchCard />
+                </div>
+              </div>
+            </div>     
+            <div>
+              <StudentTable />
+            </div>
+          </div>
         </main>
       </AuthWrapper>
     </Provider>

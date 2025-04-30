@@ -6,7 +6,7 @@ import '@aws-amplify/ui-react/styles.css';
 export const AuthWrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <Authenticator.Provider>
-      <Authenticator>
+      <Authenticator signUpAttributes={['given_name', 'family_name', 'phone_number']}>
         {children}
       </Authenticator>
     </Authenticator.Provider>

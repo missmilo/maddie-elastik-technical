@@ -1,32 +1,36 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface Student {
-  id: string;
+export interface StudentFilter {
   firstName: string;
   lastName: string;
-  dob: string;
   email: string;
+  dob: string;
   schoolName: string;
   schoolCoordinatorName: string;
   schoolTeacherName: string;
-  createdAt: string;
-  updatedAt: string;
-  __typename?: string;
 }
 
 interface StudentState {
-  filter: string;
+  filter: StudentFilter;
 }
 
 const initialState: StudentState = {
-  filter: '',
+  filter: {
+    firstName: '',
+    lastName: '',
+    email: '',
+    dob: '',
+    schoolName: '',
+    schoolCoordinatorName: '',
+    schoolTeacherName: '',
+  },
 };
 
 const studentSlice = createSlice({
-  name: 'students',
+  name: 'student',
   initialState,
   reducers: {
-    setFilter(state, action: PayloadAction<string>) {
+    setFilter: (state, action: PayloadAction<StudentFilter>) => {
       state.filter = action.payload;
     },
   },
