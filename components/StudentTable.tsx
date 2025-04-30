@@ -54,18 +54,17 @@ export const StudentTable = () => {
   const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
   const [hasMorePages, setHasMorePages] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
+  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
   const filter = useSelector((state: RootState) => state.student.filter);
   const dispatch = useDispatch<AppDispatch>();
 
   const handleFilterChange = (value: string) => {
     dispatch(setFilter(value));
-    // no URL sync — local state only
   };
 
   const loadPage = async (pageIndex: number) => {
     setLoading(true);
-
     const token = pageTokens[pageIndex - 1] ?? undefined;
 
     try {
@@ -86,14 +85,26 @@ export const StudentTable = () => {
     setLoading(false);
   };
 
-  // Load first page on mount
   React.useEffect(() => {
     void loadPage(1);
   }, []);
 
-  const filteredStudents = students.filter((student) =>
-    student.firstName.toLowerCase().startsWith(filter.toLowerCase())
-  );
+  const handleSort = () => {
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const filteredStudents = students
+    .filter((student) =>
+      student.firstName.toLowerCase().startsWith(filter.toLowerCase())
+    )
+    .sort((a, b) => {
+      const nameA = a.firstName.toLowerCase();
+      const nameB = b.firstName.toLowerCase();
+      if (nameA === nameB) return 0;
+      return sortDirection === 'asc'
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA);
+    });
 
   return (
     <View className="p-4 bg-white text-black rounded shadow-md">
@@ -114,7 +125,13 @@ export const StudentTable = () => {
         <TableHead>
           <TableRow className="bg-gray-100 text-black">
             <TableCell as="th">#</TableCell>
-            <TableCell as="th">First Name</TableCell>
+            <TableCell
+              as="th"
+              onClick={handleSort}
+              className="cursor-pointer select-none"
+            >
+              First Name {sortDirection === 'asc' ? '↑' : '↓'}
+            </TableCell>
             <TableCell as="th">Last Name</TableCell>
             <TableCell as="th">Date of Birth</TableCell>
             <TableCell as="th">Email</TableCell>
