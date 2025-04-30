@@ -17,7 +17,7 @@ import '@aws-amplify/ui-react/styles.css';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/store';
-import { setFilter } from '@/store/slices/studentSlice'; // ✅ your path
+import { setFilter } from '@/store/slices/studentSlice';
 
 interface Student {
   id: string;
@@ -56,7 +56,7 @@ export const StudentTable = () => {
   const [hasMorePages, setHasMorePages] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
 
-  const filter = useSelector((state: RootState) => state.student.filter); // ✅ your slice
+  const filter = useSelector((state: RootState) => state.student.filter);
   const dispatch = useDispatch<AppDispatch>();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -72,27 +72,30 @@ export const StudentTable = () => {
     router.push(`?filter=${encoded}`);
   };
 
-  const loadPage = async (pageIndex: number) => {
-    setLoading(true);
-    const token = pageTokens[pageIndex - 1];
-    const result = await fetchStudents(token ?? undefined);
+  const loadPage = React.useCallback(
+    async (pageIndex: number) => {
+      setLoading(true);
+      const token = pageTokens[pageIndex - 1];
+      const result = await fetchStudents(token ?? undefined);
 
-    setStudents(result.students ?? []);
+      setStudents(result.students ?? []);
 
-    if (pageIndex === pageTokens.length && result.nextToken) {
-      setPageTokens([...pageTokens, result.nextToken]);
-      setHasMorePages(true);
-    } else if (!result.nextToken) {
-      setHasMorePages(false);
-    }
+      if (pageIndex === pageTokens.length && result.nextToken) {
+        setPageTokens([...pageTokens, result.nextToken]);
+        setHasMorePages(true);
+      } else if (!result.nextToken) {
+        setHasMorePages(false);
+      }
 
-    setCurrentPageIndex(pageIndex);
-    setLoading(false);
-  };
+      setCurrentPageIndex(pageIndex);
+      setLoading(false);
+    },
+    [pageTokens]
+  );
 
   React.useEffect(() => {
-    loadPage(1);
-  }, []);
+    void loadPage(1);
+  }, [loadPage]);
 
   const filteredStudents = students.filter((student) =>
     student.firstName.toLowerCase().startsWith(filter.toLowerCase())
@@ -152,9 +155,13 @@ export const StudentTable = () => {
           currentPage={currentPageIndex}
           totalPages={pageTokens.length}
           hasMorePages={hasMorePages}
-          onNext={() => loadPage(currentPageIndex + 1)}
-          onPrevious={() => loadPage(currentPageIndex - 1)}
-          onChange={loadPage}
+          onNext={() => void loadPage(currentPageIndex + 1)}
+          onPrevious={() => void loadPage(currentPageIndex - 1)}
+          onChange={(newPageIndex) => {
+            if (typeof newPageIndex === 'number') {
+              void loadPage(newPageIndex);
+            }
+          }}
           isDisabled={loading}
         />
       </Flex>
