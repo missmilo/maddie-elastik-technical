@@ -10,7 +10,6 @@ export const handler = async (event: { queryStringParameters?: { limit?: string;
   const tableName = process.env.TABLE_NAME!;
 
   console.log("Table Name:", tableName);
-
   console.log("Fetching student records from DynamoDB");
 
 
@@ -26,7 +25,7 @@ export const handler = async (event: { queryStringParameters?: { limit?: string;
 
   console.log("Next Token:", nextToken);
 
-  // Build the ScanCommand input
+  //TODO: Remove hardcoded table name
   const scanParams = {
     TableName: "Students-yf2pbq7pojf4djod3rz6psnl4m-NONE",
     Limit: limit,
@@ -47,6 +46,7 @@ export const handler = async (event: { queryStringParameters?: { limit?: string;
       : null,
   };
 
+  //TODO: Handle errors
   return {
     statusCode: 200,
     headers: {
@@ -56,6 +56,4 @@ export const handler = async (event: { queryStringParameters?: { limit?: string;
     body: JSON.stringify(response),
   };
   console.log('Fetched students successfully');
-
-
 };
