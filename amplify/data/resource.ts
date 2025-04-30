@@ -9,8 +9,12 @@ const schema = a.schema({
     schoolCoordinatorName: a.string(),
     schoolTeacherName: a.string(),
     email: a.string(),
-  }).authorization((allow) => [
+  })
+  .authorization((allow) => [
     allow.owner(),
+  ])
+  .secondaryIndexes((index) => [
+    index("schoolName"), 
   ]),
 });
 
