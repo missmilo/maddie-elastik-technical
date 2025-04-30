@@ -40,7 +40,6 @@ export const StudentTable = () => {
   const [currentPageIndex, setCurrentPageIndex] = React.useState(1);
   const [hasMorePages, setHasMorePages] = React.useState(true);
   const [loading, setLoading] = React.useState(false);
-  const [sortDirection, setSortDirection] = React.useState<'asc' | 'desc'>('asc');
 
   const filter = useSelector((state: RootState) => state.student.filter);
 
@@ -70,10 +69,6 @@ export const StudentTable = () => {
     void loadPage(currentPageIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleSort = () => {
-    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-  };
 
   const filteredStudents = students
     .filter((student) => {
@@ -123,7 +118,7 @@ export const StudentTable = () => {
           <thead className="bg-base-200">
             <tr>
               <th>#</th>
-              <th className="cursor-pointer select-none" onClick={handleSort}>
+              <th className="cursor-pointer select-none">
                 First Name
               </th>
               <th>Last Name</th>
