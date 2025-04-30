@@ -15,6 +15,11 @@ export const auth = defineAuth({
       mutable: true,
       required: false,
     },
+    // Maps to Cognito standard attribute 'gender'
+    gender: {
+      mutable: true,
+      required: true,
+    },
     // Maps to Cognito standard attribute 'given_name'
     givenName: {
       mutable: true,
@@ -22,6 +27,11 @@ export const auth = defineAuth({
     },
     // Maps to Cognito standard attribute 'phone_number'
     phoneNumber: {
+      mutable: true,
+      required: true,
+    },
+    // Maps to Cognito standard attribute 'picture'
+    profilePicture: {
       mutable: true,
       required: true,
     }
