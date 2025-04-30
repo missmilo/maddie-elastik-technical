@@ -44,4 +44,20 @@ describe('get-students Lambda', () => {
         expect(body.nextToken).toBe(encodeURIComponent(JSON.stringify({ id: '456' })));
         expect(sendMock).toHaveBeenCalledWith(expect.any(ScanCommand));
     });
+
+    it('returns 500 when there is a DynamoDB error', async () => {
+        sendMock.mockRejectedValueOnce(new Error('DynamoDB internal error'));
+    
+        const event = {
+            queryStringParameters: { limit: '1' },
+        };
+    
+        const response = await handler(event as any, mockClient);
+    
+        expect(response.statusCode).toBe(500);
+        const body = JSON.parse(response.body);
+        expect(body.message).toBe('Internal server error.');
+        expect(sendMock).toHaveBeenCalledWith(expect.any(ScanCommand));
+    });
+    
 });

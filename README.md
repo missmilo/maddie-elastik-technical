@@ -30,8 +30,14 @@ This runs the Next.js development server, including both:
 * the frontend React UI
 * any local API routes under /pages/api or /app/api
 
+### 3. Generate AWS credentials
 
-### 3. Authenticate with your AWS environment
+You will need to generate AWS credentials for local development to access DynamoDB and other AWS services.
+Follow the instructions [here](https://docs.amplify.aws/react/start/account-setup/) to generate your temporary credentials.
+Note that these credentials will expire after a few hours, so you'll need to regenerate them or generate permanent credentials if you want to continue to develop locally.
+
+
+### 4. Authenticate with your AWS environment
 
 Authenticate with AWS using Single Sign-On to access cloud-based services like Amplify Functions and DynamoDB.
 
@@ -39,12 +45,12 @@ Authenticate with AWS using Single Sign-On to access cloud-based services like A
 aws sso login
 ```
 
-### 4. Run the Amplify sandbox 
+### 5. Run the Amplify sandbox 
 
 This runs the Amplify Sandbox that will automatically hot reload your backend code changes for cloud based resources like Lambdas.
 
 ```
-npx ampx sandbox --profile default
+npx ampx sandbox --profile <profile-name>
 ```
 
 ## Separation of Concerns
