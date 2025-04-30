@@ -21,7 +21,7 @@ export const backend = defineBackend({
 
 const apiStack = backend.createStack("api-stack");
 
-const myRestApi = new RestApi(apiStack, "RestApi", {
+export const myRestApi = new RestApi(apiStack, "RestApi", {
   restApiName: "myRestApi",
   deploy: true,
   deployOptions: {
@@ -33,6 +33,7 @@ const myRestApi = new RestApi(apiStack, "RestApi", {
     allowHeaders: Cors.DEFAULT_HEADERS, // Specify only the headers you need to allow
   },
 });
+
 
 const lambdaIntegration = new LambdaIntegration(
   backend.getStudents.resources.lambda 
@@ -106,4 +107,12 @@ backend.getStudents.resources.lambda.addToRolePolicy(
     resources: ["*"],
   })
 );
+
+
+
+
+
+
+
+
 

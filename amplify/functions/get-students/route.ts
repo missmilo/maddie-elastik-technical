@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import outputs from '../../../amplify_outputs.json';
+import { myRestApi } from '../../backend';
 
 export async function GET() {
-  const res = await fetch(`${outputs.custom.API.myRestApi.endpoint}/items`);
+  const res = await fetch(`${myRestApi.url}/items`);
   const data = await res.json();
   return NextResponse.json(data);
 }
