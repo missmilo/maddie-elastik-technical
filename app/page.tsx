@@ -8,6 +8,8 @@ import { Amplify } from 'aws-amplify';
 import { StudentTable } from "@/components/StudentTable";
 import { NavBar } from "@/components/NavBar";
 import { parseAmplifyConfig } from "aws-amplify/utils";
+import { Provider } from 'react-redux';
+import { store } from '@/store';
 
 
 Amplify.configure(outputs);
@@ -35,11 +37,13 @@ Amplify.configure(
 
 export default function App() {
   return (
-    <AuthWrapper>
-      <main>
-        <NavBar />
-        <StudentTable />
-      </main>
-    </AuthWrapper>
+    <Provider store={store}>
+      <AuthWrapper>
+        <main>
+          <NavBar />
+          <StudentTable />
+        </main>
+      </AuthWrapper>
+    </Provider>
   );
 }
